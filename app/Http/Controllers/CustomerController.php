@@ -7,7 +7,9 @@ use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\CustomerCollection;
+use App\Http\Resources\CustomerResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
@@ -46,7 +48,8 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        //
+        Log::debug("Customers", $request->all());
+        return new CustomerResource(Customer::create($request->all()));
     }
 
     /**
@@ -54,7 +57,12 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        //
+        $includeInvoices = request()->query('includeInvoices');
+        if ($includeInvoices) {
+            // cuando cargue el customer cargue las invoices del mismo con la relacion que tiene en el modelo
+            return new CustomerResource($customer->loadMissing('invoices'));
+        }
+        return new CustomerResource($customer);
     }
 
     /**
@@ -70,7 +78,8 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        //
+        Log::debug("Customers Actualizado", $request->all());
+        $customer->update($request->all());
     }
 
     /**

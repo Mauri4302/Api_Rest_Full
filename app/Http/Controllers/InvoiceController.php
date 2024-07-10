@@ -2,24 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\InvoiceFilter;
 use App\Models\Invoice;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceCollection;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // TRAEMOS TODA LA DATA
-        // $customers = Customer::all();
-        // AHORA LA VAMOS A PAGINAR PARA QUE NO SE HAGA MUY PESADO
-        $invoices = Invoice::paginate();
-        // AHORA NECESITAMOS DEVOLVER UNA COLECCION
-        return new InvoiceCollection($invoices);
+        $filter = new InvoiceFilter();
+        $queryItems = $filter->transform($request);
+        if (count($queryItems) == 0) {
+            return new InvoiceCollection(Invoice::paginate());
+        }else{
+
+            // TRAEMOS TODA LA DATA
+            // $customers = Customer::all();
+            // AHORA LA VAMOS A PAGINAR PARA QUE NO SE HAGA MUY PESADO
+            $invoices = Invoice::where($queryItems)->paginate();
+            // AHORA NECESITAMOS DEVOLVER UNA COLECCION
+            return new InvoiceCollection($invoices->appends($request->query()));
+        }
     }
 
     /**
