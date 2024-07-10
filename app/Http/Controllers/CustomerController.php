@@ -2,18 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\CustomerFilter;
 use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Resources\CustomerCollection;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // ahora el metodo va a recibir una request y dependiendo de lo que venga va a filtrar
+    public function index(Request $request)
     {
-        //
+        $filter = new CustomerFilter();
+        $queryItems = $filter->transform($request);
+        $includeInvoices = $request->query('includeInvoices');
+        // TRAEMOS TODA LA DATA
+        // $customers = Customer::all();
+        // AHORA LA VAMOS A PAGINAR PARA QUE NO SE HAGA MUY PESADO
+        // $customers = Customer::paginate();
+        // hacemos el filtro aca en la consulta where
+        $customers = Customer::where($queryItems);
+        if ($includeInvoices) {
+            $customers = $customers->with('invoices');
+        }
+        // AHORA NECESITAMOS DEVOLVER UNA COLECCION
+        return new CustomerCollection($customers->paginate()->appends($request->query()));
     }
 
     /**

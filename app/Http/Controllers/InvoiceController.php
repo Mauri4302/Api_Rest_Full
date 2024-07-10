@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
+use App\Http\Resources\InvoiceCollection;
 
 class InvoiceController extends Controller
 {
@@ -13,7 +14,12 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        //
+        // TRAEMOS TODA LA DATA
+        // $customers = Customer::all();
+        // AHORA LA VAMOS A PAGINAR PARA QUE NO SE HAGA MUY PESADO
+        $invoices = Invoice::paginate();
+        // AHORA NECESITAMOS DEVOLVER UNA COLECCION
+        return new InvoiceCollection($invoices);
     }
 
     /**
