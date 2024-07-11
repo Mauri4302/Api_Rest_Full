@@ -25,4 +25,14 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'], function
 {
     Route::apiResource('customers', CustomerController::class);
     Route::apiResource('invoices', InvoiceController::class);
+    Route::post('invoices/bulk',['use' => 'InvoiceController@bulkStore']);
 });
+
+// ACA SE EXIGE LA AUTENTICACION Y TENER LOS PERMISOS Y ROLES EN LOS TOKEN QUE ESTAN
+// EN EL ARCHIVO web.php
+// Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers', 'middleware' => 'auth:sanctum'], function ()
+// {
+//     Route::apiResource('customers', CustomerController::class);
+//     Route::apiResource('invoices', InvoiceController::class);
+//     Route::post('invoices/bulk',['use' => 'InvoiceController@bulkStore']);
+// });

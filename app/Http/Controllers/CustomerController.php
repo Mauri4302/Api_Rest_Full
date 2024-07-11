@@ -78,7 +78,7 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        Log::debug("Customers Actualizado", $request->all());
+        Log::debug("Customers Actualizado", $custom = [$request->all(), $customer]);
         $customer->update($request->all());
     }
 
